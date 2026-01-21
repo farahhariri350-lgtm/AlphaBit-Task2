@@ -22,14 +22,27 @@ export default function ThemeProvider({ children }) {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
+    if (userRole) {
+      localStorage.setItem('userRole', userRole);
+    } else {
+      localStorage.removeItem('userRole');
+    }
+    
+    if (currentUser) {
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
+
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
     setIsLoading(false);
-  }, []);
+  }, [userRole, currentUser, allUsers]); 
 
   const updateUser = (id, updatedData) => {
     if (!id) return;
     setAllUsers(prev => {
       const newList = prev.map(u => u.id === id ? { ...u, ...updatedData } : u);
-      localStorage.setItem('allUsers', JSON.stringify(newList));
+   
       return newList;
     });
     if (currentUser?.id === id) setCurrentUser(prev => ({ ...prev, ...updatedData }));
@@ -41,7 +54,6 @@ export default function ThemeProvider({ children }) {
 
     if (userRole === 'admin') {
       if (isUserPage || targetUserId) {
-        // نأخذ الـ ID إما من التارجت أو من السليكتد أو من الرابط نفسه
         const urlId = hash.split('/').pop(); 
         const idToUpdate = targetUserId || selectedUser?.id || urlId;
         if (idToUpdate) updateUser(idToUpdate, { userColor: newColor });
@@ -65,7 +77,7 @@ export default function ThemeProvider({ children }) {
 
       if (userRole === 'admin' && isUserPage) {
         const urlId = hash.split('/').pop();
-        const found = allUsers.find(u => u.id === urlId || u.id === selectedUser?.id);
+        const found = allUsers.find(u => u.id === urlId || u.id === selectedUser?.id || u.id == urlId);
         colorToApply = found?.userColor || systemColor;
       } else if (currentUser) {
         const found = allUsers.find(u => u.id === currentUser.id);
