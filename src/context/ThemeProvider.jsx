@@ -4,13 +4,12 @@ import { ThemeContext } from './ThemeContext';
 export default function ThemeProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. تحميل قائمة المستخدمين
+  // 1. تحميل البيانات من LocalStorage
   const [allUsers, setAllUsers] = useState(() => {
     const saved = localStorage.getItem('allUsers');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // 2. تحميل المستخدم الحالي (المسجل دخوله)
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
     try {
@@ -22,89 +21,53 @@ export default function ThemeProvider({ children }) {
   const [systemColor, setSystemColor] = useState(() => localStorage.getItem('pageColor') || '#111827');
   const [bgColor, setBgColor] = useState(systemColor);
 
-  // 4. تحميل المستخدم المختار (عندما يتصفح الأدمن ملف مستخدم)
-  const [selectedUser, setSelectedUser] = useState(() => {
-    const savedId = localStorage.getItem('selectedUserId');
-    return (savedId && allUsers.length > 0) ? allUsers.find(u => u.id === savedId) : null;
-  });
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
 
-  // مزامنة الـ LocalStorage
-  useEffect(() => { localStorage.setItem('userRole', userRole || ''); }, [userRole]);
-  useEffect(() => { localStorage.setItem('currentUser', JSON.stringify(currentUser)); }, [currentUser]);
-  useEffect(() => {
-    if (selectedUser) localStorage.setItem('selectedUserId', selectedUser.id);
-    else localStorage.removeItem('selectedUserId');
-  }, [selectedUser]);
-
+  // دالة تحديث بيانات أي مستخدم (بدون تعقيد)
   const updateUser = (id, updatedData) => {
     if (!id) return;
-    setAllUsers(prev => {
-      const newList = prev.map(u => u.id === id ? { ...u, ...updatedData } : u);
-      localStorage.setItem('allUsers', JSON.stringify(newList));
-      return newList;
-    });
-    if (currentUser?.id === id) setCurrentUser(prev => ({ ...prev, ...updatedData }));
-    if (selectedUser?.id === id) setSelectedUser(prev => ({ ...prev, ...updatedData }));
+    const newList = allUsers.map(u => u.id === id ? { ...u, ...updatedData } : u);
+    setAllUsers(newList);
+    localStorage.setItem('allUsers', JSON.stringify(newList));
+    
+    if (currentUser?.id === id) {
+      const updatedCurrent = { ...currentUser, ...updatedData };
+      setCurrentUser(updatedCurrent);
+      localStorage.setItem('currentUser', JSON.stringify(updatedCurrent));
+    }
   };
 
-  // --- دالة تغيير اللون الذكية للـ HashRouter ---
+  // --- دالة تغيير اللون (بسيطة ومباشرة) ---
   const changeColor = (newColor, targetUserId = null) => {
-    const hash = window.location.hash;
-    const isViewingUserPage = hash.includes('/user/');
-
-    if (userRole === 'admin') {
-      // إذا كان الأدمن يغير لون مستخدم آخر
-      if (isViewingUserPage && (targetUserId || selectedUser)) {
-        const idToUpdate = targetUserId || selectedUser.id;
-        updateUser(idToUpdate, { userColor: newColor });
-      } 
-      // إذا كان الأدمن يغير لونه الخاص
-      else {
+    // إذا مررنا ID مستخدم معين (يعني الأدمن عم يغير لون يوزر)
+    if (targetUserId) {
+      updateUser(targetUserId, { userColor: newColor });
+    } 
+    // إذا ما في ID، يعني الشخص عم يغير لونه هو (سواء أدمن أو يوزر)
+    else if (currentUser) {
+      updateUser(currentUser.id, { userColor: newColor });
+      // إذا كان أدمن، منحدث لون النظام العام كمان
+      if (userRole === 'admin') {
         setSystemColor(newColor);
         localStorage.setItem('pageColor', newColor);
-        setBgColor(newColor);
-        updateUser(currentUser?.id, { userColor: newColor });
       }
-    } else {
-      // مستخدم عادي يغير لونه
-      updateUser(currentUser?.id, { userColor: newColor });
       setBgColor(newColor);
     }
   };
 
-  // --- مراقب الألوان والمسارات ---
+  // --- تطبيق اللون المعتمد على المستخدم الحالي ---
   useEffect(() => {
-    const applyCorrectColor = () => {
-      const hash = window.location.hash;
-      const isUserPage = hash.includes('/user/');
-      
-      let colorToApply = systemColor;
-
-      if (userRole === 'admin') {
-        if (isUserPage && selectedUser) {
-          const userInList = allUsers.find(u => u.id === selectedUser.id);
-          colorToApply = userInList?.userColor || systemColor;
-        } else {
-          colorToApply = systemColor;
-        }
-      } else if (userRole === 'user') {
-        const userInList = allUsers.find(u => u.id === currentUser?.id);
-        colorToApply = userInList?.userColor || systemColor;
-      }
-
-      setBgColor(colorToApply);
-      document.body.style.backgroundColor = colorToApply;
-    };
-
-    applyCorrectColor();
-    // استماع لتغيير الهاش لضمان تحديث اللون فوراً عند التنقل
-    window.addEventListener('hashchange', applyCorrectColor);
-    return () => window.removeEventListener('hashchange', applyCorrectColor);
-  }, [currentUser, systemColor, userRole, selectedUser, allUsers]);
+    if (currentUser) {
+      const userInList = allUsers.find(u => u.id === currentUser.id);
+      const color = userInList?.userColor || systemColor;
+      setBgColor(color);
+      document.body.style.backgroundColor = color;
+    }
+  }, [currentUser, allUsers, systemColor]);
 
   return (
     <ThemeContext.Provider value={{ 
@@ -112,7 +75,7 @@ export default function ThemeProvider({ children }) {
       currentUser, setCurrentUser, allUsers, setAllUsers, 
       updateUser, selectedUser, setSelectedUser, isLoading 
     }}>
-      <div style={{ minHeight: '100vh', transition: '0.4s ease-in-out' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: bgColor, transition: '0.3s' }}>
         {!isLoading && children} 
       </div>
     </ThemeContext.Provider>
