@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // تم تغيير BrowserRouter إلى HashRouter
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import ThemeProvider from './context/ThemeProvider'; 
 import { ThemeContext } from './context/ThemeContext'; 
@@ -9,7 +9,7 @@ import UserPage from './pages/UserPage';
 import Login from './pages/Login';
 
 function AppContent() {
- const { userRole, isLoading } = useContext(ThemeContext);
+  const { userRole, isLoading } = useContext(ThemeContext);
 
   if (isLoading) return <div style={{ background: '#111827', height: '100vh' }}></div>;
 
@@ -17,12 +17,14 @@ function AppContent() {
     <Routes>
       <Route path="/login" element={!userRole ? <Login /> : <Navigate to={userRole === 'admin' ? "/admin" : "/user"} replace />} />
       
-      {/* الأدمن */}
+      {/* الأدمن: أضفنا /* ليعرف الرأوتر أن هناك مسارات فرعية */}
       <Route path="/admin/*" element={userRole === 'admin' ? <AdminLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<AdminPage />} />
+        {/* هذا هو التعديل المهم لكي تفتح صفحة اليوزر داخل الأدمن */}
+        <Route path="user/:id" element={<UserPage />} /> 
       </Route>
 
-      {/* اليوزر */}
+      {/* اليوزر العادي */}
       <Route path="/user" element={userRole ? <UserLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<UserPage />} />
         <Route path=":id" element={<UserPage />} /> 
@@ -36,7 +38,6 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      {/* تم تغيير الـ Wrapper هنا أيضاً */}
       <Router>
         <AppContent />
       </Router>
