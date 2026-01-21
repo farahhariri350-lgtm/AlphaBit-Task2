@@ -1,0 +1,134 @@
+/* الحاوية الأساسية - توسيط كامل */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    perspective: 1500px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* طبقة الشبكة والمساطر الذكية (نفس ستايل صفحة اليوزر) */
+.login-container::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: 
+      linear-gradient(rgba(128, 128, 128, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(128, 128, 128, 0.2) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center;
+    mix-blend-mode: difference; /* بتخليها تظهر عكل الألوان */
+    animation: bgPan 40s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* الكرت الزجاجي */
+.login-card {
+    background: rgba(15, 23, 42, 0.85); /* داكن ليعطي فخامة */
+    backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 35px;
+    width: 100%;
+    max-width: 400px;
+    padding: 50px 40px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    z-index: 2;
+    animation: cardEntrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.login-card h1 {
+    margin-bottom: 35px;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* تنسيق المدخلات */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    padding: 15px 20px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    color: white;
+    font-size: 15px;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+/* الأزرار */
+.btn-user {
+    width: 100%;
+    padding: 15px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+}
+
+.btn-admin {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    color: #4CAF50;
+    border: 2px solid #4CAF50;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-user:hover {
+    background: #2563eb;
+    transform: translateY(-3px);
+}
+
+.btn-admin:hover {
+    background: #4CAF50;
+    color: white;
+    transform: translateY(-3px);
+}
+
+.error-message {
+    background: rgba(255, 77, 77, 0.1);
+    color: #ff4d4d;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+/* الأنيميشن */
+@keyframes bgPan {
+    from { background-position: 0 0; }
+    to { background-position: 100px 100px; }
+}
+
+@keyframes cardEntrance {
+    0% { opacity: 0; transform: translateY(50px) rotateX(-10deg); }
+    100% { opacity: 1; transform: translateY(0) rotateX(0); }
+}

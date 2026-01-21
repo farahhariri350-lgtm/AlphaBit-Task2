@@ -1,0 +1,95 @@
+/* إعدادات عامة */
+:root {
+  --sidebar-width: 260px;
+  --primary-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --glass-effect: rgba(255, 255, 255, 0.2);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* صفحة اللوجن - تصميم البطاقة */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: var(--primary-shadow);
+  text-align: center;
+}
+
+/* تنسيق الأزرار العام */
+button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* تنسيق الـ Sidebar (Admin) */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* تنسيق الـ Navbar (User) */
+.navbar {
+  height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* أزرار الألوان الدائرية */
+.color-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.color-dot {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* محتوى الصفحات */
+/* تأثير الزجاج الشفاف للمحتوى ليظهر لون الخلفية من تحته */
+.main-content {
+  margin: 20px;
+  background: rgba(255, 255, 255, 0.4); 
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-height: 80vh;
+}
