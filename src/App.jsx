@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // تم تغيير BrowserRouter إلى HashRouter
 import { useContext } from 'react';
 import ThemeProvider from './context/ThemeProvider'; 
 import { ThemeContext } from './context/ThemeContext'; 
@@ -22,7 +22,7 @@ function AppContent() {
         <Route index element={<AdminPage />} />
       </Route>
 
-      {/* اليوزر - تعديل هنا لضمان قراءة الـ ID */}
+      {/* اليوزر */}
       <Route path="/user" element={userRole ? <UserLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<UserPage />} />
         <Route path=":id" element={<UserPage />} /> 
@@ -30,17 +30,18 @@ function AppContent() {
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
-  )
-  ;
+  );
 }
 
 function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
+      {/* تم تغيير الـ Wrapper هنا أيضاً */}
+      <Router>
         <AppContent />
-      </BrowserRouter>
+      </Router>
     </ThemeProvider>
   );
 }
+
 export default App;
