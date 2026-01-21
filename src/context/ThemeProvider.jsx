@@ -4,7 +4,6 @@ import { ThemeContext } from './ThemeContext';
 export default function ThemeProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. تحميل البيانات من LocalStorage
   const [allUsers, setAllUsers] = useState(() => {
     const saved = localStorage.getItem('allUsers');
     return saved ? JSON.parse(saved) : [];
@@ -20,54 +19,63 @@ export default function ThemeProvider({ children }) {
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || null);
   const [systemColor, setSystemColor] = useState(() => localStorage.getItem('pageColor') || '#111827');
   const [bgColor, setBgColor] = useState(systemColor);
-
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
 
-  // دالة تحديث بيانات أي مستخدم (بدون تعقيد)
   const updateUser = (id, updatedData) => {
     if (!id) return;
     const newList = allUsers.map(u => u.id === id ? { ...u, ...updatedData } : u);
     setAllUsers(newList);
     localStorage.setItem('allUsers', JSON.stringify(newList));
-    
-    if (currentUser?.id === id) {
-      const updatedCurrent = { ...currentUser, ...updatedData };
-      setCurrentUser(updatedCurrent);
-      localStorage.setItem('currentUser', JSON.stringify(updatedCurrent));
-    }
+    if (currentUser?.id === id) setCurrentUser({ ...currentUser, ...updatedData });
   };
 
-  // --- دالة تغيير اللون (بسيطة ومباشرة) ---
+  // --- دالة تغيير اللون (معدلة لتفهم الـ Hash) ---
   const changeColor = (newColor, targetUserId = null) => {
-    // إذا مررنا ID مستخدم معين (يعني الأدمن عم يغير لون يوزر)
-    if (targetUserId) {
-      updateUser(targetUserId, { userColor: newColor });
-    } 
-    // إذا ما في ID، يعني الشخص عم يغير لونه هو (سواء أدمن أو يوزر)
-    else if (currentUser) {
-      updateUser(currentUser.id, { userColor: newColor });
-      // إذا كان أدمن، منحدث لون النظام العام كمان
-      if (userRole === 'admin') {
+    // نتحقق إذا كان الرابط يحتوي على كلمة user لنميز صفحة الموظف
+    const isUserPage = window.location.hash.includes('/user');
+
+    if (userRole === 'admin') {
+      if (isUserPage || targetUserId) {
+        const idToUpdate = targetUserId || selectedUser?.id;
+        if (idToUpdate) updateUser(idToUpdate, { userColor: newColor });
+      } else {
         setSystemColor(newColor);
         localStorage.setItem('pageColor', newColor);
+        setBgColor(newColor);
+        updateUser(currentUser?.id, { userColor: newColor });
       }
+    } else {
+      updateUser(currentUser?.id, { userColor: newColor });
       setBgColor(newColor);
     }
   };
 
-  // --- تطبيق اللون المعتمد على المستخدم الحالي ---
+  // --- تطبيق اللون فوراً عند التنقل ---
   useEffect(() => {
-    if (currentUser) {
-      const userInList = allUsers.find(u => u.id === currentUser.id);
-      const color = userInList?.userColor || systemColor;
-      setBgColor(color);
-      document.body.style.backgroundColor = color;
-    }
-  }, [currentUser, allUsers, systemColor]);
+    const applyColor = () => {
+      const isUserPage = window.location.hash.includes('/user');
+      let colorToApply = systemColor;
+
+      if (userRole === 'admin' && isUserPage && selectedUser) {
+        const found = allUsers.find(u => u.id === selectedUser.id);
+        colorToApply = found?.userColor || systemColor;
+      } else if (currentUser) {
+        const found = allUsers.find(u => u.id === currentUser.id);
+        colorToApply = found?.userColor || systemColor;
+      }
+
+      setBgColor(colorToApply);
+      document.body.style.backgroundColor = colorToApply;
+    };
+
+    applyColor();
+    window.addEventListener('hashchange', applyColor);
+    return () => window.removeEventListener('hashchange', applyColor);
+  }, [currentUser, allUsers, systemColor, userRole, selectedUser]);
 
   return (
     <ThemeContext.Provider value={{ 
@@ -75,7 +83,7 @@ export default function ThemeProvider({ children }) {
       currentUser, setCurrentUser, allUsers, setAllUsers, 
       updateUser, selectedUser, setSelectedUser, isLoading 
     }}>
-      <div style={{ minHeight: '100vh', backgroundColor: bgColor, transition: '0.3s' }}>
+      <div style={{ minHeight: '100vh', transition: '0.3s' }}>
         {!isLoading && children} 
       </div>
     </ThemeContext.Provider>
