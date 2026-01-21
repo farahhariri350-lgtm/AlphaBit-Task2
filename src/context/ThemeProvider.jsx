@@ -22,49 +22,47 @@ export default function ThemeProvider({ children }) {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    if (userRole) {
-      localStorage.setItem('userRole', userRole);
-    } else {
-      localStorage.removeItem('userRole');
-    }
+    if (userRole) localStorage.setItem('userRole', userRole);
+    else localStorage.removeItem('userRole');
     
-    if (currentUser) {
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('currentUser');
-    }
+    if (currentUser) localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    else localStorage.removeItem('currentUser');
 
     localStorage.setItem('allUsers', JSON.stringify(allUsers));
     setIsLoading(false);
-  }, [userRole, currentUser, allUsers]); 
+  }, [userRole, currentUser, allUsers]);
 
   const updateUser = (id, updatedData) => {
     if (!id) return;
     setAllUsers(prev => {
-      const newList = prev.map(u => u.id === id ? { ...u, ...updatedData } : u);
-   
+      const newList = prev.map(u => String(u.id) === String(id) ? { ...u, ...updatedData } : u);
       return newList;
     });
-    if (currentUser?.id === id) setCurrentUser(prev => ({ ...prev, ...updatedData }));
+    if (String(currentUser?.id) === String(id)) {
+      setCurrentUser(prev => ({ ...prev, ...updatedData }));
+    }
   };
 
   const changeColor = (newColor, targetUserId = null) => {
     const hash = window.location.hash;
-    const isUserPage = hash.includes('/user');
+   
+    const isSpecificUserPage = hash.includes('/admin/user/') || hash.match(/\/user\/\d+/);
 
     if (userRole === 'admin') {
-      if (isUserPage || targetUserId) {
-        const urlId = hash.split('/').pop(); 
-        const idToUpdate = targetUserId || selectedUser?.id || urlId;
+      if (isSpecificUserPage || targetUserId) {
+     
+        const urlId = hash.split('/').pop();
+        const idToUpdate = targetUserId || urlId;
         if (idToUpdate) updateUser(idToUpdate, { userColor: newColor });
       } else {
+     
         setSystemColor(newColor);
         localStorage.setItem('pageColor', newColor);
         setBgColor(newColor);
-        updateUser(currentUser?.id, { userColor: newColor });
       }
     } else {
-      updateUser(currentUser?.id, { userColor: newColor });
+ 
+      if (currentUser) updateUser(currentUser.id, { userColor: newColor });
       setBgColor(newColor);
     }
   };
@@ -72,15 +70,19 @@ export default function ThemeProvider({ children }) {
   useEffect(() => {
     const applyColor = () => {
       const hash = window.location.hash;
-      const isUserPage = hash.includes('/user');
+      const isSpecificUserPage = hash.includes('/admin/user/') || (userRole === 'user' && hash.includes('/user'));
       let colorToApply = systemColor;
 
-      if (userRole === 'admin' && isUserPage) {
-        const urlId = hash.split('/').pop();
-        const found = allUsers.find(u => u.id === urlId || u.id === selectedUser?.id || u.id == urlId);
-        colorToApply = found?.userColor || systemColor;
+      if (userRole === 'admin') {
+        if (isSpecificUserPage) {
+          const urlId = hash.split('/').pop();
+          const found = allUsers.find(u => String(u.id) === String(urlId) || String(u.id) === String(selectedUser?.id));
+          colorToApply = found?.userColor || systemColor;
+        } else {
+          colorToApply = systemColor;
+        }
       } else if (currentUser) {
-        const found = allUsers.find(u => u.id === currentUser.id);
+        const found = allUsers.find(u => String(u.id) === String(currentUser.id));
         colorToApply = found?.userColor || systemColor;
       }
 
