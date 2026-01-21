@@ -23,10 +23,10 @@ const AdminPage = () => {
   };
 
   const handleCardClick = (user) => {
-   if (editingId) return; 
+ if (editingId) return; 
   setSelectedUser(user); 
-  // هذا السطر هو الأهم: يضع الرقم في العنوان فوق
-  navigate(`/user/${user.id}`);
+  // التعديل: نذهب لمسار اليوزر التابع للأدمن
+  navigate(`/admin/user/${user.id}`);
   };
 
   return (

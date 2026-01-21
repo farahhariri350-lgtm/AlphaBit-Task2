@@ -17,15 +17,15 @@ function AppContent() {
     <Routes>
       <Route path="/login" element={!userRole ? <Login /> : <Navigate to={userRole === 'admin' ? "/admin" : "/user"} replace />} />
       
-      {/* الأدمن: أضفنا /* ليعرف الرأوتر أن هناك مسارات فرعية */}
+      {/* الأدمن - أضفنا /* لدعم المسارات الفرعية */}
       <Route path="/admin/*" element={userRole === 'admin' ? <AdminLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<AdminPage />} />
-        {/* هذا هو التعديل المهم لكي تفتح صفحة اليوزر داخل الأدمن */}
+        {/* هذا السطر يسمح للأدمن بفتح صفحة اليوزر داخل القالب الخاص به */}
         <Route path="user/:id" element={<UserPage />} /> 
       </Route>
 
       {/* اليوزر العادي */}
-      <Route path="/user" element={userRole ? <UserLayout /> : <Navigate to="/login" replace />}>
+      <Route path="/user" element={userRole === 'user' ? <UserLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<UserPage />} />
         <Route path=":id" element={<UserPage />} /> 
       </Route>

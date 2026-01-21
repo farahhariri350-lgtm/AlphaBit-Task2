@@ -27,20 +27,23 @@ export default function ThemeProvider({ children }) {
 
   const updateUser = (id, updatedData) => {
     if (!id) return;
-    const newList = allUsers.map(u => u.id === id ? { ...u, ...updatedData } : u);
-    setAllUsers(newList);
-    localStorage.setItem('allUsers', JSON.stringify(newList));
-    if (currentUser?.id === id) setCurrentUser({ ...currentUser, ...updatedData });
+    setAllUsers(prev => {
+      const newList = prev.map(u => u.id === id ? { ...u, ...updatedData } : u);
+      localStorage.setItem('allUsers', JSON.stringify(newList));
+      return newList;
+    });
+    if (currentUser?.id === id) setCurrentUser(prev => ({ ...prev, ...updatedData }));
   };
 
-  // --- دالة تغيير اللون (معدلة لتفهم الـ Hash) ---
   const changeColor = (newColor, targetUserId = null) => {
-    // نتحقق إذا كان الرابط يحتوي على كلمة user لنميز صفحة الموظف
-    const isUserPage = window.location.hash.includes('/user');
+    const hash = window.location.hash;
+    const isUserPage = hash.includes('/user');
 
     if (userRole === 'admin') {
       if (isUserPage || targetUserId) {
-        const idToUpdate = targetUserId || selectedUser?.id;
+        // نأخذ الـ ID إما من التارجت أو من السليكتد أو من الرابط نفسه
+        const urlId = hash.split('/').pop(); 
+        const idToUpdate = targetUserId || selectedUser?.id || urlId;
         if (idToUpdate) updateUser(idToUpdate, { userColor: newColor });
       } else {
         setSystemColor(newColor);
@@ -54,14 +57,15 @@ export default function ThemeProvider({ children }) {
     }
   };
 
-  // --- تطبيق اللون فوراً عند التنقل ---
   useEffect(() => {
     const applyColor = () => {
-      const isUserPage = window.location.hash.includes('/user');
+      const hash = window.location.hash;
+      const isUserPage = hash.includes('/user');
       let colorToApply = systemColor;
 
-      if (userRole === 'admin' && isUserPage && selectedUser) {
-        const found = allUsers.find(u => u.id === selectedUser.id);
+      if (userRole === 'admin' && isUserPage) {
+        const urlId = hash.split('/').pop();
+        const found = allUsers.find(u => u.id === urlId || u.id === selectedUser?.id);
         colorToApply = found?.userColor || systemColor;
       } else if (currentUser) {
         const found = allUsers.find(u => u.id === currentUser.id);
@@ -83,7 +87,7 @@ export default function ThemeProvider({ children }) {
       currentUser, setCurrentUser, allUsers, setAllUsers, 
       updateUser, selectedUser, setSelectedUser, isLoading 
     }}>
-      <div style={{ minHeight: '100vh', transition: '0.3s' }}>
+      <div style={{ minHeight: '100vh', transition: '0.3s ease' }}>
         {!isLoading && children} 
       </div>
     </ThemeContext.Provider>
