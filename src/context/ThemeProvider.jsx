@@ -10,7 +10,7 @@ export default function ThemeProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // 2. تحميل المستخدم الحالي
+  // 2. تحميل المستخدم الحالي (المسجل دخوله)
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
     try {
@@ -18,12 +18,11 @@ export default function ThemeProvider({ children }) {
     } catch { return null; }
   });
 
-  // 3. حالات الأدمن والرتبة والألوان
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || null);
   const [systemColor, setSystemColor] = useState(() => localStorage.getItem('pageColor') || '#111827');
   const [bgColor, setBgColor] = useState(systemColor);
 
-  // 4. تحميل المستخدم المختار (مهم للريفريش)
+  // 4. تحميل المستخدم المختار (عندما يتصفح الأدمن ملف مستخدم)
   const [selectedUser, setSelectedUser] = useState(() => {
     const savedId = localStorage.getItem('selectedUserId');
     return (savedId && allUsers.length > 0) ? allUsers.find(u => u.id === savedId) : null;
@@ -41,7 +40,6 @@ export default function ThemeProvider({ children }) {
     else localStorage.removeItem('selectedUserId');
   }, [selectedUser]);
 
-  // دالة تحديث بيانات أي مستخدم
   const updateUser = (id, updatedData) => {
     if (!id) return;
     setAllUsers(prev => {
@@ -53,16 +51,18 @@ export default function ThemeProvider({ children }) {
     if (selectedUser?.id === id) setSelectedUser(prev => ({ ...prev, ...updatedData }));
   };
 
-  // --- دالة تغيير اللون الذكية (تم إصلاحها هنا) ---
+  // --- دالة تغيير اللون الذكية للـ HashRouter ---
   const changeColor = (newColor, targetUserId = null) => {
-    const isUserPage = window.location.pathname.includes('/user/');
+    const hash = window.location.hash;
+    const isViewingUserPage = hash.includes('/user/');
 
     if (userRole === 'admin') {
-      // الحالة 1: الأدمن داخل صفحة موظف ويغير لون الموظف
-      if (isUserPage && targetUserId && targetUserId !== currentUser?.id) {
-        updateUser(targetUserId, { userColor: newColor });
+      // إذا كان الأدمن يغير لون مستخدم آخر
+      if (isViewingUserPage && (targetUserId || selectedUser)) {
+        const idToUpdate = targetUserId || selectedUser.id;
+        updateUser(idToUpdate, { userColor: newColor });
       } 
-      // الحالة 2: الأدمن في الداشبورد أو يغير لونه الشخصي
+      // إذا كان الأدمن يغير لونه الخاص
       else {
         setSystemColor(newColor);
         localStorage.setItem('pageColor', newColor);
@@ -70,17 +70,17 @@ export default function ThemeProvider({ children }) {
         updateUser(currentUser?.id, { userColor: newColor });
       }
     } else {
-      // الحالة 3: مستخدم عادي يغير لونه
+      // مستخدم عادي يغير لونه
       updateUser(currentUser?.id, { userColor: newColor });
       setBgColor(newColor);
     }
   };
 
-  // --- محرك مراقبة الألوان والمسارات ---
+  // --- مراقب الألوان والمسارات ---
   useEffect(() => {
     const applyCorrectColor = () => {
-      const path = window.location.pathname;
-      const isUserPage = path.includes('/user/');
+      const hash = window.location.hash;
+      const isUserPage = hash.includes('/user/');
       
       let colorToApply = systemColor;
 
@@ -101,8 +101,9 @@ export default function ThemeProvider({ children }) {
     };
 
     applyCorrectColor();
-    const interval = setInterval(applyCorrectColor, 150);
-    return () => clearInterval(interval);
+    // استماع لتغيير الهاش لضمان تحديث اللون فوراً عند التنقل
+    window.addEventListener('hashchange', applyCorrectColor);
+    return () => window.removeEventListener('hashchange', applyCorrectColor);
   }, [currentUser, systemColor, userRole, selectedUser, allUsers]);
 
   return (
@@ -111,7 +112,7 @@ export default function ThemeProvider({ children }) {
       currentUser, setCurrentUser, allUsers, setAllUsers, 
       updateUser, selectedUser, setSelectedUser, isLoading 
     }}>
-      <div style={{ minHeight: '100vh', transition: '0.5s ease' }}>
+      <div style={{ minHeight: '100vh', transition: '0.4s ease-in-out' }}>
         {!isLoading && children} 
       </div>
     </ThemeContext.Provider>
