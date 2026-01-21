@@ -1,67 +1,79 @@
+/* الحاوية الأساسية - جعلناها شفافة لتأخذ شكل الأب (AdminLayout) */
 .admin-page-content {
-  position: relative;
-  min-height: 100vh;
-  padding: 40px;
+  width: 100%;
   color: #fff;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-  overflow-x: hidden; 
+
+.user-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+
+.employee-card {
+  background: rgba(31, 41, 55, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  transition: 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+  border-color: #3b82f6;
+  background: rgba(31, 41, 55, 0.9);
 }
 
 
 .edit-fields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
- 
-  box-sizing: border-box; 
+  margin-top: 15px;
 }
 
 .edit-fields input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 12px;
   background: #111827;
   border: 1px solid #374151;
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
-  outline: none;
- 
-  box-sizing: border-box; 
   font-size: 14px;
-  display: block;
+  
+  box-sizing: border-box; 
+  outline: none;
+}
+
+.edit-fields input:focus {
+  border-color: #3b82f6;
 }
 
 .save-btn {
   width: 100%;
-  padding: 14px;
-  margin-top: 8px;
-  border-radius: 12px;
-  box-sizing: border-box; 
-  cursor: pointer;
+  padding: 12px;
+  margin-top: 10px;
   background: #3b82f6;
   color: #fff;
   border: none;
+  border-radius: 10px;
   font-weight: bold;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .save-btn:hover {
   background: #2563eb;
-  transform: translateY(-2px);
-}
-
-
-.admin-page-content::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-image: 
-    linear-gradient(rgba(128, 128, 128, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(128, 128, 128, 0.1) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mix-blend-mode: overlay;
-  animation: bgPan 60s linear infinite;
-  z-index: -1; 
-  pointer-events: none;
 }
