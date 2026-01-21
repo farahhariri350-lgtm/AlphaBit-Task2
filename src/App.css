@@ -1,4 +1,4 @@
-/* إعدادات عامة */
+
 :root {
   --sidebar-width: 260px;
   --primary-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -11,7 +11,7 @@ body {
   overflow-x: hidden;
 }
 
-/* صفحة اللوجن - تصميم البطاقة */
+
 .login-container {
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@ body {
   text-align: center;
 }
 
-/* تنسيق الأزرار العام */
+
 button {
   padding: 10px 20px;
   border-radius: 8px;
@@ -43,7 +43,7 @@ button:hover {
   filter: brightness(1.1);
 }
 
-/* تنسيق الـ Sidebar (Admin) */
+
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -56,7 +56,7 @@ button:hover {
   gap: 20px;
 }
 
-/* تنسيق الـ Navbar (User) */
+
 .navbar {
   height: 70px;
   background: rgba(255, 255, 255, 0.1);
@@ -68,7 +68,7 @@ button:hover {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* أزرار الألوان الدائرية */
+
 .color-group {
   display: flex;
   gap: 12px;
@@ -83,8 +83,7 @@ button:hover {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* محتوى الصفحات */
-/* تأثير الزجاج الشفاف للمحتوى ليظهر لون الخلفية من تحته */
+
 .main-content {
   margin: 20px;
   background: rgba(255, 255, 255, 0.4); 

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
-// استخدمها بـ const { ... } = useContext(ThemeContext);
+
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import ColorButtons from './ColorButtons';
 import './Sidebar.css';
@@ -13,7 +13,7 @@ const Sidebar = () => {
  const handleLogout = () => {
   setUserRole(null);
   setCurrentUser(null);
-  // نحذف فقط بيانات الجلسة، ونترك allUsers و pageColor
+
   localStorage.removeItem('userRole');
   localStorage.removeItem('currentUser');
   navigate('/login');
@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar-container">
-      {/* قسم البروفايل العلوي */}
+    
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 5px' }}>
         <div style={{ 
           width: '40px', height: '40px', background: 'linear-gradient(45deg, #3b82f6, #2dd4bf)', 
@@ -35,7 +35,7 @@ const Sidebar = () => {
 
       <div className="sidebar-divider"></div>
 
-      {/* قسم الإحصائيات */}
+    
       <div>
         <span className="section-label">OVERVIEW</span>
         <div style={{ padding: '0 5px', display: 'flex', justifyContent: 'space-between', color: '#fff' }}>
@@ -46,13 +46,13 @@ const Sidebar = () => {
 
       <div className="sidebar-divider"></div>
 
-      {/* قسم التنقل */}
+    
       <nav>
         <span className="section-label">MENU</span>
         <Link to="/admin" className={`sidebar-nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
           🏠 Dashboard
         </Link>
-        {/* تم تغيير الرابط ليكون بروفايل الأدمن وليس الموظف */}
+
         <Link to="/admin" className={`sidebar-nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
           👤 My Profile
         </Link>
@@ -60,7 +60,7 @@ const Sidebar = () => {
 
       <div className="sidebar-divider"></div>
 
-      {/* قسم الألوان */}
+  
       <div>
         <span className="section-label">THEME</span>
         <div style={{ padding: '0 5px' }}>

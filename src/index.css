@@ -1,4 +1,4 @@
-/* ألوان ثابتة للتصميم الداكن */
+
 :root {
   --sidebar-bg: #12161d;
   --card-bg: #1c2128;
@@ -9,6 +9,6 @@
 body {
   margin: 0;
   padding: 0;
-  transition: background-color 0.3s ease; /* لتغيير لون الخلفية بسلاسة */
+  transition: background-color 0.3s ease; 
   min-height: 100vh;
 }

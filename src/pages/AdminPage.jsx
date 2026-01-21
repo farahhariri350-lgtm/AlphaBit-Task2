@@ -11,7 +11,7 @@ const AdminPage = () => {
   const navigate = useNavigate();
 
   const handleEdit = (e, user) => {
-    e.stopPropagation(); // يمنع فتح صفحة اليوزر عند الضغط على زر التعديل
+    e.stopPropagation(); 
     setEditingId(user.id);
     setTempData({ job: user.job || '', salary: user.salary || '' });
   };
@@ -25,13 +25,12 @@ const AdminPage = () => {
   const handleCardClick = (user) => {
  if (editingId) return; 
   setSelectedUser(user); 
-  // التعديل: نذهب لمسار اليوزر التابع للأدمن
   navigate(`/admin/user/${user.id}`);
   };
 
   return (
     <div className="admin-page-content" style={{ backgroundColor: bgColor }}>
-      {/* طبقة الشبكة والمساطر يتم التعامل معها في CSS عبر الـ ::before */}
+    
       
       <div className="header-section">
         <div>

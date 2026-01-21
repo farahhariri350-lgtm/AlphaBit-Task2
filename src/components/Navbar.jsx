@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import ColorButtons from './ColorButtons';
 import { useNavigate, Link } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
-// استخدمها بـ const { ... } = useContext(ThemeContext);
+
 
 const Navbar = () => {
   const { setUserRole, setCurrentUser, userRole, setSelectedUser } = useContext(ThemeContext);
@@ -11,14 +11,14 @@ const Navbar = () => {
  const handleLogout = () => {
   setUserRole(null);
   setCurrentUser(null);
-  // نحذف فقط بيانات الجلسة، ونترك allUsers و pageColor
+
   localStorage.removeItem('userRole');
   localStorage.removeItem('currentUser');
   navigate('/login');
 };
   const handleGoBack = () => {
-    setSelectedUser(null); // تصفير اليوزر المختار
-    navigate('/admin');    // العودة للداشبورد
+    setSelectedUser(null); 
+    navigate('/admin');    
   };
 
   return (
@@ -36,7 +36,7 @@ const Navbar = () => {
           User <span style={{ color: '#3b82f6' }}>Portal</span>
         </strong>
 
-        {/* إذا كان الداخل أدمن، نطلع له زر "العودة للوحة التحكم" في الناف بار */}
+      
         {userRole === 'admin' && (
           <button 
             onClick={handleGoBack}

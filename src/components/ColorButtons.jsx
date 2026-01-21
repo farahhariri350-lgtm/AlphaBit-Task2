@@ -1,13 +1,12 @@
 // src/components/ColorButtons.jsx
 import React, { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
-// استخدمها بـ const { ... } = useContext(ThemeContext);
+
 
 const ColorButtons = () => {
   const { changeColor, currentUser, selectedUser, userRole } = useContext(ThemeContext);
   
-  // تحديد من هو المستخدم الذي سنغير لونه الآن
-  // إذا كان الأدمن فاتح صفحة موظف، التغيير يروح للموظف. وإلا يروح لليوزر الحالي.
+
   const targetUser = (userRole === 'admin' && selectedUser) ? selectedUser : currentUser;
 
   const colors = [
@@ -23,7 +22,7 @@ const ColorButtons = () => {
       {colors.map((color) => (
         <button 
           key={color.name} 
-          // نمرر id المستخدم المستهدف للدالة
+     
           onClick={() => changeColor(color.hex, targetUser?.id)}
           style={{ 
             width: '25px', height: '25px', borderRadius: '50%',

@@ -6,10 +6,9 @@ import './UserPage.css';
 const UserPage = () => {
   const { currentUser, selectedUser, userRole, setSelectedUser, allUsers } = useContext(ThemeContext);
   const navigate = useNavigate();
-  const { id } = useParams(); // يقرأ الـ ID من الرابط (URL)
+  const { id } = useParams(); 
 
-  // منطق استعادة البيانات:
-  // 1. إذا كان أدمن ومعنا ID في الرابط، نبحث عن اليوزر في allUsers
+
   let userToDisplay = (userRole === 'admin' && selectedUser) ? selectedUser : currentUser;
 
   if (userRole === 'admin' && id) {
@@ -17,7 +16,7 @@ const UserPage = () => {
     if (foundUser) userToDisplay = foundUser;
   }
 
-  // تحديث الكونتيكست باليوزر اللي لقيناه عشان يضل اللون ثابت
+
   useEffect(() => {
     if (userRole === 'admin' && id && !selectedUser) {
       const foundUser = allUsers.find(u => String(u.id) === String(id));

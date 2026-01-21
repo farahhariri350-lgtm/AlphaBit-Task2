@@ -17,10 +17,10 @@ function AppContent() {
     <Routes>
       <Route path="/login" element={!userRole ? <Login /> : <Navigate to={userRole === 'admin' ? "/admin" : "/user"} replace />} />
       
-      {/* الأدمن - أضفنا /* لدعم المسارات الفرعية */}
+     
       <Route path="/admin/*" element={userRole === 'admin' ? <AdminLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<AdminPage />} />
-        {/* هذا السطر يسمح للأدمن بفتح صفحة اليوزر داخل القالب الخاص به */}
+       
         <Route path="user/:id" element={<UserPage />} /> 
       </Route>
 
